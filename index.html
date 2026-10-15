@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hello World</title>
+<style>
+  :root {
+    --red: #e11d2e;
+    --red-dark: #9f1020;
+    --bg: #fff5f5;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+  }
+  svg { width: min(92vw, 1100px); height: auto; display: block; }
+
+  .outline {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 3;
+  }
+
+  /* Liquid level rises from bottom to top, then loops */
+  .liquid {
+    animation: fill 6s ease-in-out infinite;
+  }
+  @keyframes fill {
+    0%   { transform: translateY(260px); }
+    75%  { transform: translateY(-10px); }
+    90%  { transform: translateY(-10px); }
+    100% { transform: translateY(260px); }
+  }
+
+  /* Wave on the liquid surface */
+  .wave {
+    animation: wave 2s linear infinite;
+  }
+  @keyframes wave {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-200px); }
+  }
+
+  /* Bubbles rise and fade */
+  .bubble {
+    fill: rgba(255, 255, 255, 0.55);
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 1;
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0%   { transform: translate(0, 0); opacity: 0; }
+    10%  { opacity: 1; }
+    50%  { transform: translate(var(--drift), -120px); }
+    100% { transform: translate(0, -260px); opacity: 0; }
+  }
+
+  /* Floating background bubbles */
+  .bg-bubble {
+    position: fixed;
+    bottom: -40px;
+    border-radius: 50%;
+    border: 2px solid rgba(225, 29, 46, 0.35);
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(225,29,46,.12));
+    animation: float linear infinite;
+    pointer-events: none;
+  }
+  @keyframes float {
+    to { transform: translateY(-115vh); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .liquid, .wave, .bubble, .bg-bubble { animation: none; }
+    .liquid { transform: translateY(-10px); }
+  }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1000 260" role="img" aria-label="Hello World">
+  <defs>
+    <clipPath id="textClip">
+      <text x="500" y="185" text-anchor="middle" font-size="170" font-weight="900"
+            font-family="Arial Black, Helvetica Neue, Arial, sans-serif">Hello World</text>
+    </clipPath>
+    <linearGradient id="liquidGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff4d5e"/>
+      <stop offset="1" stop-color="#9f1020"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#textClip)">
+    <g class="liquid">
+      <!-- wavy surface, wider than viewBox so it can scroll -->
+      <path class="wave" fill="url(#liquidGrad)"
+        d="M0 20 Q50 0 100 20 T200 20 T300 20 T400 20 T500 20 T600 20 T700 20 T800 20 T900 20 T1000 20 T1100 20 T1200 20 V600 H0 Z"/>
+      <g id="bubbles"></g>
+    </g>
+  </g>
+
+  <text class="outline" x="500" y="185" text-anchor="middle" font-size="170" font-weight="900"
+        font-family="Arial Black, Helvetica Neue, Arial, sans-serif">Hello World</text>
+</svg>
+
+<script>
+  // Bubbles inside the liquid
+  const ns = "http://www.w3.org/2000/svg";
+  const group = document.getElementById("bubbles");
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElementNS(ns, "circle");
+    c.setAttribute("class", "bubble");
+    c.setAttribute("cx", (Math.random() * 920 + 40).toFixed(1));
+    c.setAttribute("cy", (240 + Math.random() * 40).toFixed(1));
+    c.setAttribute("r", (2 + Math.random() * 6).toFixed(1));
+    c.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + "s";
+    c.style.animationDelay = (-Math.random() * 5).toFixed(2) + "s";
+    c.style.setProperty("--drift", ((Math.random() - 0.5) * 30).toFixed(1) + "px");
+    group.appendChild(c);
+  }
+
+  // Bubbles floating in the background
+  for (let i = 0; i < 18; i++) {
+    const b = document.createElement("div");
+    b.className = "bg-bubble";
+    const size = 10 + Math.random() * 40;
+    b.style.width = b.style.height = size + "px";
+    b.style.left = Math.random() * 100 + "vw";
+    b.style.animationDuration = (8 + Math.random() * 10) + "s";
+    b.style.animationDelay = (-Math.random() * 18) + "s";
+    document.body.appendChild(b);
+  }
+</script>
+</body>
+</html>
